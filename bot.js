@@ -5,9 +5,11 @@ const fs = require('fs');
 var gameStarted = false;
 var gameBegun = false;
 var playerIn = [];
+var werewolves_channels = [];
 
 // Initialize Discord Bot
 var bot = new Discord.Client();
+
 bot.login(auth.token)
 
 bot.once('ready', function (evt) {
@@ -89,15 +91,11 @@ function StartGame(){
         admin: false
     })
 
-    playerIn.push({
-        id: "TEST MAN5",
-        admin: false
-    })
-
     var temp_players = shuffle(playerIn)
 
     if(temp_players.length < 7){
-        werewolves = 2;
+        //TODO remove when done
+        werewolves = 6;
         doctor = 1;
         angel = 0;
     }else if(temp_players.length === 7){
@@ -114,15 +112,57 @@ function StartGame(){
 
         if(werewolves > 0){
             temp_players[i].type = "Werewolf"
+            if(temp_players[i].user){
+                temp_players[i].user.createDM()
+                    .then((channel) => {
+                        channel.send("Hemm ahna Werewolf, ha naraw kemm int kapaci.")
+                        //TODO remove
+
+                        werewolves_channels.push({
+                            id: channel.recipient.id,
+                            channel: channel
+                        })
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
             werewolves--;
         } else if(doctor > 0){
             temp_players[i].type = "Doctor"
+            if(temp_players[i].user){
+                temp_players[i].user.createDM()
+                    .then((channel) => {
+                        channel.send("Worrajt Dottore, f'idejk Doctor.")
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
             doctor--;
         }else if(angel > 0){
             temp_players[i].type = "Angel"
+            if(temp_players[i].user){
+                temp_players[i].user.createDM()
+                    .then((channel) => {
+                        channel.send("Charlie's Angel's kont gej qal madunni, pero Angel int")
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
             angel--;
         }else{
             temp_players[i].type = "Civilian"
+            if(temp_players[i].user){
+                temp_players[i].user.createDM()
+                    .then((channel) => {
+                        channel.send("Inti ha tkun pleb Civilian f'din, kula zibel")
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
         }
     }
  
@@ -155,6 +195,10 @@ bot.on('message', async message => {
     // It will listen for messages that will start with `!`
 
     if (checkPrefix(message.content.toLowerCase(),`${auth.prefix}test`)) {
+        message.member.user.createDM()
+            .then(channel => {
+                channel.send("Hi Mate")
+            })
         message.channel.send("Dan test duda!")
         return;
     }
@@ -171,6 +215,7 @@ bot.on('message', async message => {
             playerIn.push({
                 id: message.member.user.id,
                 admin: true,
+                user: message.member.user
             })
             gameStarted = true;
         }else{
@@ -214,6 +259,7 @@ bot.on('message', async message => {
                     playerIn.push({
                         id: message.member.user.id,
                         admin: false,
+                        user: message.member.user
                     })
         
                     var output = "Nies s'issa: \n";
