@@ -1,2 +1,1 @@
-# werewolf
-Discord Werewolf Bot
+# soundoff
